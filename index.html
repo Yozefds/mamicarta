@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta para Mamá</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffebee;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .envelope-container {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: all 0.8s ease-in-out;
+            cursor: pointer;
+        }
+
+        .envelope.is-open {
+            transform: translateY(-100px);
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 120px solid #f8bbd0;
+            transform-origin: top;
+            transform: rotateX(0deg);
+            transition: all 0.8s ease-in-out;
+            z-index: 3;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+
+        .envelope.is-open .envelope-front {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #fce4ec;
+            border-radius: 0 0 5px 5px;
+            z-index: 2;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .letter {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            background: white;
+            left: 5%;
+            top: 5%;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
+            transform: translateY(0);
+            transition: all 0.8s ease-in-out 0.4s;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .envelope.is-open .letter {
+            transform: translateY(-150px);
+            z-index: 4;
+        }
+
+        .open-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 25px;
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Dancing Script', cursive;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            z-index: 5;
+        }
+
+        .open-button:hover {
+            background-color: #c2185b;
+            transform: translateX(-50%) translateY(-2px);
+        }
+
+        .message {
+            font-size: 28px;
+            color: #e91e63;
+            margin-bottom: 20px;
+            font-family: 'Dancing Script', cursive;
+            text-align: center;
+        }
+
+        .heart {
+            font-size: 48px;
+            color: #e91e63;
+            animation: beat 1s infinite alternate;
+            margin: 10px 0;
+        }
+
+        @keyframes beat {
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .signature {
+            margin-top: 20px;
+            font-family: 'Dancing Script', cursive;
+            color: #e91e63;
+            font-size: 22px;
+            align-self: flex-end;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f44336;
+            opacity: 0;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f8bbd0;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 50%);
+            transform-origin: top;
+            transform: rotateX(0deg);
+            transition: all 0.8s ease-in-out;
+            z-index: 4;
+        }
+
+        .envelope.is-open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .stamp {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 50px;
+            background-color: #e91e63;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Dancing Script', cursive;
+            font-size: 12px;
+            transform: rotate(10deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope-container">
+        <div class="envelope" id="envelope">
+            <div class="envelope-flap"></div>
+            <div class="envelope-front"></div>
+            <div class="envelope-back">
+                <div class="stamp">mami</div>
+            </div>
+            <div class="letter">
+                <div class="message">¡Feliz día mami!</div>
+                <div class="heart">❤️</div>
+                <div class="signature">-tu negrito colorado</div>
+            </div>
+            <button class="open-button" id="openButton">Abrir carta</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('openButton').addEventListener('click', function() {
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('is-open');
+            
+            // Crear confeti al abrir
+            createConfetti();
+            
+            // Cambiar el texto del botón
+            this.textContent = "¡Gracias mamá!";
+            this.style.backgroundColor = "#4CAF50";
+            
+            // Deshabilitar el botón después de abrir
+            this.disabled = true;
+        });
+
+        function createConfetti() {
+            const colors = ['#e91e63', '#f44336', '#9c27b0', '#3f51b5', '#2196F3', '#4CAF50'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -10 + 'px';
+                confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                
+                document.body.appendChild(confetti);
+                
+                const animationDuration = Math.random() * 3 + 2;
+                
+                confetti.style.animation = `fall ${animationDuration}s linear forwards`;
+                
+                // Definir la animación de caída
+                const keyframes = `
+                    @keyframes fall {
+                        to {
+                            transform: translateY(100vh) rotate(${Math.random() * 360}deg);
+                            opacity: 1;
+                        }
+                    }
+                `;
+                
+                const style = document.createElement('style');
+                style.innerHTML = keyframes;
+                document.head.appendChild(style);
+                
+                // Eliminar el confeti después de la animación
+                setTimeout(() => {
+                    confetti.remove();
+                    style.remove();
+                }, animationDuration * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
